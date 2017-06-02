@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from api.views import BookSearch
+from songs.views import MusicSearch
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^book/search/', BookSearch.as_view()),
+    url(r'^music/search/', MusicSearch.as_view()),
+
 ]
