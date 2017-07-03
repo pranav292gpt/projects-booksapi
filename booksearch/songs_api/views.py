@@ -10,10 +10,10 @@ YOUR_KEY = "ad78c75776b93da787d08df051b73e19"
 
 class MusicSearch(APIView):
     def get(self, request, *args, **kwargs):
-        if "song" in request.GET:
-            song = request.GET.get("song")
+        if "search" in request.GET:
+            search = request.GET.get("search")
 
-            params={"method" : "track.search", "api_key": YOUR_KEY,"track" : song, "format" : "json"}
+            params={"method" : "track.search", "api_key": YOUR_KEY,"track" : search, "format" : "json"}
 
             req = requests.get("http://ws.audioscrobbler.com/2.0/", params=params)         
             print req.url

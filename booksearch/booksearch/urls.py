@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from api.views import BookSearch
-from songs.views import MusicSearch
+from booksearch_api.views import BookSearch
+from songs_api.views import MusicSearch
+from movies_api.views import MovieSearch, TVSearch
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^book/search/', BookSearch.as_view()),
-    url(r'^music/search/', MusicSearch.as_view()),
+    url(r'^book/', BookSearch.as_view()),
+    url(r'^movie/', MovieSearch.as_view()),
+    url(r'^tv/', TVSearch.as_view()),
+    url(r'^music/', MusicSearch.as_view()),
 
 ]

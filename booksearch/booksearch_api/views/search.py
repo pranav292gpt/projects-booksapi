@@ -12,10 +12,10 @@ YOUR_KEY = "z8BdUYyClBcYIiGglrXMBA"
 
 class BookSearch(APIView):
     def get(self, request, *args, **kwargs):
-        if "book" in request.GET:
-            book = request.GET.get("book")
+        if "search" in request.GET:
+            query = request.GET.get("search")
 
-            req = requests.get("https://www.goodreads.com/search.xml", params={"key": YOUR_KEY,"q" : book})
+            req = requests.get("https://www.goodreads.com/search.xml", params={"key": YOUR_KEY,"q" : query})
             xml = req.text
             dict = xmltodict.parse(xml)
             res = {}
