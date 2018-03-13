@@ -16,8 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from booksearch_api.views import BookSearch
-from songs_api.views import MusicSearch
+from songs_api.views import MusicSearch, Test
 from movies_api.views import MovieSearch, TVSearch
+from bot.views import HubChallenge
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,5 +26,6 @@ urlpatterns = [
     url(r'^movie/', MovieSearch.as_view()),
     url(r'^tv/', TVSearch.as_view()),
     url(r'^music/', MusicSearch.as_view()),
-
+    url(r'^test/', Test.as_view()),
+    url(r'^webhooks/',HubChallenge.as_view()),
 ]
