@@ -32,11 +32,26 @@ class HubChallenge(APIView):
 
         webhook_event =  request.data['entry'][0]['messaging'][0]
         sender_psid = webhook_event['sender']['id']
+        print sender_psid
         message = webhook_event.get('message')
-        
-        print message
 
-        res = ''
+
+        req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
+                    json={
+                    "access_token": self.PAGE_ACCESS_TOKEN,
+                    "recipient": {"id": sender_psid},
+                    "sender_action":"mark_seen",
+                          })
+
+        #Start typing action while response is being fetched and posted
+        req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
+                    json={
+                    "access_token": self.PAGE_ACCESS_TOKEN,
+                    "recipient": {"id": sender_psid},
+                    "sender_action":"typing_on",
+                          })
+
+        res = ['', '']
 
         
         if message:
@@ -46,13 +61,30 @@ class HubChallenge(APIView):
 
             else:
                 res = book_request_handler(text)
-        response = {'text': res}
+                
+                if res[1]:
+                    print res[1]
+                    req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
+                    json={
+                        "access_token": self.PAGE_ACCESS_TOKEN,
+                        "recipient": {"id": sender_psid},
+                        "message": {
+                            "attachment": {
+                                "type":"image",
+                                "payload": {
+                                    "url" : res[1],
+                                    "is_reusable":True }
+                                    }
+                            }
+                          })
+
+        response = {'text': res[0]}
         req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
                     json={
                     "access_token": self.PAGE_ACCESS_TOKEN,
                     "recipient": {"id": sender_psid},
-                    "message": response
+                    "message": response,
                           })
-
-
+        
+        
         return Response({'received data': request.data})
