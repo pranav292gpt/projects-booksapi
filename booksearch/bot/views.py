@@ -11,6 +11,8 @@ import urllib2
 import xmltodict
 import sys
 
+from bot.helpers import *
+
 class HubChallenge(APIView):
 
     PAGE_ACCESS_TOKEN  = 'EAAdK4IfLTbQBAHJGvfx9e27RbVKQBsJRM4kUGAW3zZA43WrEpHBg11zht8m2FUSYRt9mqvfKCMiqRSi1pd5k7icKanm6KuCP6k90vNiObR0fTVBiICKNgxXb9rRYVL1VFsy4jmZBnkUKDY1HO1exZA2pin1FZBVJL2RVJSF95wZDZD'
@@ -40,24 +42,10 @@ class HubChallenge(APIView):
         if message:
             text = message['text'].lower()
             if message['text'].lower() in self.standard_greetings:
-                response = {'text': "{0} \nPlease enter a query to search.".format(message['text'].title())}
+                res = "{0} \nPlease enter a query to search.".format(message['text'].title())
 
             else:
-                breq = requests.get("https://www.goodreads.com/search.xml", params={"key": self.YOUR_BOOK_KEY,"q" : text})
-                xml = breq.text
-                dict = xmltodict.parse(xml)
-                
-                len = int(dict["GoodreadsResponse"]['search']['results-end'])
-                try:
-                    book = dict["GoodreadsResponse"]['search']['results']['work'][0]
-                    rating = book['average_rating']
-                    title = book['best_book']['title']
-                    author = book['best_book']['author']['name']
-                    
-                    res = "Book Name: {0}\nAuthor: {1} \nRating:{2}".format(title, author, rating)
-                except Exception as exp:
-                    print sys.exc_info()
-
+                res = book_request_handler(text)
         response = {'text': res}
         req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
                     json={
