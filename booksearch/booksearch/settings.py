@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'booksearch_api',
     'songs_api',
     'movies_api',
+    'db',
 ]
 
 MIDDLEWARE = [

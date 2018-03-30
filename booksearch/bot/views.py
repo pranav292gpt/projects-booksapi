@@ -3,13 +3,15 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import pythonwhois
+#import pythonwhois
 from django.http.response import HttpResponse
 import requests
 import json
 import urllib2
 import xmltodict
 import sys
+
+from db.models import User, Search
 
 from bot.helpers import *
 
@@ -28,14 +30,18 @@ class HubChallenge(APIView):
             return HttpResponse(self.request.GET['hub.challenge'])
         return Response({"Hello": "World"})
 
+
+    #Handle message postbacks
     def post(self, request, *args, **kwargs):
 
         webhook_event =  request.data['entry'][0]['messaging'][0]
         sender_psid = webhook_event['sender']['id']
-        print sender_psid
         message = webhook_event.get('message')
+ 
+        user, created = User.objects.get_or_create(psid=sender_psid)
+        search = Search.objects.create(user=user, request=message)
 
-
+        #Mark as seen    
         req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
                     json={
                     "access_token": self.PAGE_ACCESS_TOKEN,
@@ -62,8 +68,9 @@ class HubChallenge(APIView):
             else:
                 res = book_request_handler(text)
                 
+                #If image url returned 
                 if res[1]:
-                    print res[1]
+                    #Display image
                     req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
                     json={
                         "access_token": self.PAGE_ACCESS_TOKEN,
@@ -77,7 +84,11 @@ class HubChallenge(APIView):
                                     }
                             }
                           })
+        
+        search.response = res[0]
+        search.save()
 
+        #Post response to messenger
         response = {'text': res[0]}
         req = requests.post("https://graph.facebook.com/v2.6/me/messages", 
                     json={
